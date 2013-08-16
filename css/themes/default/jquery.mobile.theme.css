@@ -264,13 +264,6 @@ html .ui-body-a a:visited,
 html body .ui-group-theme-a a:visited {
     color: #0066ff /*{a-link-visited}*/;
 }
-.ui-overlay-a a:hover,
-.ui-page-theme-a a:hover,
-html .ui-bar-a a:hover,
-html .ui-body-a a:hover,
-html body .ui-group-theme-a a:hover {
-	color: #0033ff /*{a-link-hover}*/;
-}
 .ui-overlay-a a:active,
 .ui-page-theme-a a:active,
 html .ui-bar-a a:active,
@@ -298,18 +291,7 @@ html head + body .ui-btn.ui-btn-a:visited {
 	color: 					#111 /*{a-bup-color}*/;
 	text-shadow: 0 /*{a-bup-shadow-x}*/ 1px /*{a-bup-shadow-y}*/ 0 /*{a-bup-shadow-radius}*/ #eee /*{a-bup-shadow-color}*/;
 }
-/* Button hover */
-.ui-overlay-a .ui-btn:hover,
-.ui-page-theme-a .ui-btn:hover,
-html .ui-bar-a .ui-btn:hover,
-html .ui-body-a .ui-btn:hover,
-html body .ui-group-theme-a .ui-btn:hover,
-html head + body .ui-btn.ui-btn-a:hover {
-	background: 			#ededed /*{a-bhover-background-color}*/;
-	border-color:	 		#ddd /*{a-bhover-border}*/;
-	color: 					#111 /*{a-bhover-color}*/;
-	text-shadow: 0 /*{a-bhover-shadow-x}*/ 1px /*{a-bhover-shadow-y}*/ 0 /*{a-bhover-shadow-radius}*/ #eee /*{a-bhover-shadow-color}*/;
-}
+
 /* Button down */
 .ui-overlay-a .ui-btn:active,
 .ui-page-theme-a .ui-btn:active,

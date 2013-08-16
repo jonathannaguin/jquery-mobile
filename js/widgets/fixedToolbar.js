@@ -159,7 +159,7 @@ define( [ "jquery", "../jquery.mobile.widget", "../jquery.mobile.core", "../jque
 			// tbPage argument can be a Page object or an event, if coming from throttled resize.
 			tbPage = ( tbPage && tbPage.type === undefined && tbPage ) || this.page || $el.closest( ".ui-page" );
 			tbPage = ( !!this.page )? this.page: ".ui-page-active";
-			$( tbPage ).css( "padding-" + ( header ? "top" : "bottom" ), $el.outerHeight() + pos );
+			$(tbPage).children(".ui-content").css(( header ? "top" : "bottom" ), $el.outerHeight() + pos);
 		},
 
 		_useTransition: function( notransition ) {
