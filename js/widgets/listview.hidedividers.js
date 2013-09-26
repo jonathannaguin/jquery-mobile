@@ -11,10 +11,10 @@ var rdivider = /(^|\s)ui-li-divider($|\s)/,
 
 $.widget( "mobile.listview", $.mobile.listview, {
 	options: {
-		hidedividers: true
+		hidedividers: false
 	},
 
-	refresh: function() {
+	_afterListviewRefresh: function() {
 		var items, idx, item, hideDivider = true;
 
 		this._superApply( arguments );
