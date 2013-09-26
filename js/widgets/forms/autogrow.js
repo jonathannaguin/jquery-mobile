@@ -2,12 +2,10 @@
 //>>description: Enhances and consistently styles text inputs.
 //>>label: Textarea Autosize
 //>>group: Forms
-//>>css.structure: ../css/structure/jquery.mobile.forms.textinput.autogrow.css
+//>>css.structure: ../css/structure/jquery.mobile.forms.textinput.css
 //>>css.theme: ../css/themes/default/jquery.mobile.theme.css
 
-define( [
-	"jquery",
-	"./textinput" ], function( jQuery ) {
+define( [ "jquery", "../../jquery.mobile.core", "../../jquery.mobile.widget", "../../jquery.mobile.degradeInputs", "../../jquery.mobile.zoom", "./textinput" ], function( jQuery ) {
 //>>excludeEnd("jqmBuildExclude");
 (function( $, undefined ) {
 
@@ -33,74 +31,34 @@ define( [
 				"paste": "_timeout",
 			});
 
-			// Attach to the various you-have-become-visible notifications that the
-			// various framework elements emit.
-			// TODO: Remove all but the updatelayout handler once #6426 is fixed.
-			this._on( true, this.document, {
-
-				// TODO: Move to non-deprecated event
-				"pageshow": "_handleShow",
-				"popupbeforeposition": "_handleShow",
-				"updatelayout": "_handleShow",
-				"panelopen": "_handleShow"
-			});
-		},
-
-		// Synchronously fix the widget height if this widget's parents are such
-		// that they show/hide content at runtime. We still need to check whether
-		// the widget is actually visible in case it is contained inside multiple
-		// such containers. For example: panel contains collapsible contains
-		// autogrow textinput. The panel may emit "panelopen" indicating that its
-		// content has become visible, but the collapsible is still collapsed, so
-		// the autogrow textarea is still not visible.
-		_handleShow: function( event ) {
-			if ( $.contains( event.target, this.element[ 0 ] ) &&
-				this.element.is( ":visible" ) ) {
-
-				if ( event.type !== "popupbeforeposition" ) {
-					this.element
-						.addClass( "ui-textinput-autogrow-resize" )
-						.one( "transitionend webkitTransitionEnd oTransitionEnd",
-							$.proxy( function() {
-								this.element.removeClass( "ui-textinput-autogrow-resize" );
-							}, this ) );
-				}
-				this._prepareHeightUpdate();
+			// Issue 509: the browser is not providing scrollHeight properly until the styles load
+			if ( $.trim( this.element.val() ) ) {
+				// bind to the window load to make sure the height is calculated based on BOTH
+				// the DOM and CSS
+				// binding to pagechange here ensures that for pages loaded via
+				// ajax the height is recalculated without user input
+				this._on( true, $.mobile.window, {
+					"load": "_timeout",
+					"pagechange": "_timeout"
+				});
 			}
 		},
 
 		_unbindAutogrow: function() {
 			this._off( this.element, "keyup change input paste" );
-			this._off( this.document,
-				"pageshow popupbeforeposition updatelayout panelopen" );
+			this._off( $.mobile.window, "load pagechange" );
 		},
 
-		keyupTimeout: null,
-
-		_prepareHeightUpdate: function( delay ) {
-			if ( this.keyupTimeout ) {
-				clearTimeout( this.keyupTimeout );
-			}
-			if ( delay === undefined ) {
-				this._updateHeight();
-			} else {
-				this.keyupTimeout = this._delay( "_updateHeight", delay );
-			}
-		},
+		keyupTimeout:null,
 
 		_timeout: function() {
-			this._prepareHeightUpdate( this.options.keyupTimeoutBuffer );
+			clearTimeout( this.keyupTimeout );
+			this.keyupTimeout = this._delay( "_updateHeight", this.options.keyupTimeoutBuffer );
 		},
 
-		_updateHeight: function() {
+		_updateHeight:function() {
 
-			this.keyupTimeout = 0;
-
-			this.element.css({
-				"height": 0,
-				"min-height": 0,
-				"max-height": 0
-			});
+			this.element.css( "height", "0px" );
 
 			var paddingTop, paddingBottom, paddingHeight,
 				scrollHeight = this.element[ 0 ].scrollHeight,
@@ -124,25 +82,15 @@ define( [
 				height += paddingHeight;
 			}
 
-			this.element.css({
-				"height": height,
-				"min-height": "",
-				"max-height": ""
-			});
+			this.element.css( "height", height + "px" );
 		},
 
-		refresh: function() {
-			if ( this.options.autogrow && this.isTextarea ) {
-				this._updateHeight();
-			}
-		},
-
-		_setOptions: function( options ) {
+		_setOptions: function( options ){
 
 			this._super( options );
 
-			if ( options.autogrow !== undefined && this.isTextarea ) {
-				if ( options.autogrow ) {
+			if ( options.autogrow !== undefined && this.isTextarea ){
+				if ( options.autogrow ){
 					this._autogrow();
 				} else {
 					this._unbindAutogrow();

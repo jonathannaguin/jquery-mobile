@@ -5,12 +5,7 @@
 //>>css.structure: ../css/structure/jquery.mobile.fixedToolbar.css
 //>>css.theme: ../css/themes/default/jquery.mobile.theme.css
 
-define( [
-	"jquery",
-	"../jquery.mobile.widget",
-	"../jquery.mobile.core",
-	"../jquery.mobile.navigation",
-	"../jquery.mobile.zoom" ], function( jQuery ) {
+define( [ "jquery", "../jquery.mobile.widget", "../jquery.mobile.core", "../jquery.mobile.navigation", "./page", "../jquery.mobile.zoom" ], function( jQuery ) {
 //>>excludeEnd("jqmBuildExclude");
 (function( $, undefined ) {
 
@@ -31,7 +26,7 @@ define( [
 				page = this.element.closest( ".ui-page" );
 			if ( page.length === 0 ){
 				page = false;
-				this._on( this.document, {
+				this._on( $.mobile.document, {
 					"pageshow": "refresh"
 				});
 			}

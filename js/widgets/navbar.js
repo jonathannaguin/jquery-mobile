@@ -44,19 +44,15 @@ $.widget( "mobile.navbar", {
 			});
 
 		$navbar.delegate( "a", "vclick", function( /* event */ ) {
-			var activeBtn = $( this );
+			var activeBtn;
 
-			if ( !( activeBtn.hasClass( "ui-state-disabled" ) ||
-
-				// DEPRECATED as of 1.4.0 - remove after 1.4.0 release
-				// only ui-state-disabled should be present thereafter
-				activeBtn.hasClass( "ui-disabled" ) ||
-				activeBtn.hasClass( $.mobile.activeBtnClass ) ) ) {
-
+			if ( !$( this ).is( ".ui-disabled, .ui-btn-active" ) ) {
 				$navbtns.removeClass( $.mobile.activeBtnClass );
-				activeBtn.addClass( $.mobile.activeBtnClass );
+				$( this ).addClass( $.mobile.activeBtnClass );
 
 				// The code below is a workaround to fix #1181
+				activeBtn = $( this );
+
 				$( document ).one( "pagehide", function() {
 					activeBtn.removeClass( $.mobile.activeBtnClass );
 				});

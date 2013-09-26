@@ -141,7 +141,7 @@ define( [ "jquery", "../jquery.mobile.vmouse", "../jquery.mobile.support.touch" 
 
 		durationThreshold: 1000, // More time than this, and it isn't a swipe.
 
-		horizontalDistanceThreshold: 30,  // Swipe horizontal displacement must be more than this.
+		horizontalDistanceThreshold: 10,  // Swipe horizontal displacement must be more than this.
 
 		verticalDistanceThreshold: 75,  // Swipe vertical displacement must be less than this.
 
@@ -206,7 +206,6 @@ define( [ "jquery", "../jquery.mobile.vmouse", "../jquery.mobile.support.touch" 
 				$this.bind( touchMoveEvent, moveHandler )
 					.one( touchStopEvent, function() {
 						emitted = true;
-						$this.unbind( touchMoveEvent, moveHandler );
 				});
 			});
 		},

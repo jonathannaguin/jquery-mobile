@@ -22,17 +22,39 @@ $.extend( $.Widget.prototype, {
 			elem = this.element[ 0 ],
 			options = {};
 
-		//
-		if( !$.mobile.getAttribute( elem, "defaults" ) ){
-			for ( option in this.options ) {
-				value = $.mobile.getAttribute( elem, option.replace( rcapitals, replaceFunction ) );
-				if ( value != null ) {
-					options[ option ] = value;
-				}
+		for ( option in this.options ) {
+			value = $.mobile.getAttribute( elem, option.replace( rcapitals, replaceFunction ) );
+			if ( value != null ) {
+				options[ option ] = value;
 			}
 		}
 
 		return options;
+	},
+
+	enhanceWithin: function( target, useKeepNative ) {
+		this.enhance( $( $[ this.namespace ][ this.widgetName ].initSelector, $( target ) ), useKeepNative );
+	},
+
+	enhance: function( targets, useKeepNative ) {
+		var page, keepNative, $widgetElements = $( targets );
+
+		// if ignoreContentEnabled is set to true the framework should
+		// only enhance the selected elements when they do NOT have a
+		// parent with the data-namespace-ignore attribute
+		$widgetElements = $.mobile.enhanceable( $widgetElements );
+
+		if ( useKeepNative && $widgetElements.length ) {
+			// TODO remove dependency on the page widget for the keepNative.
+			// Currently the keepNative value is defined on the page prototype so
+			// the method is as well
+			page = $.mobile.closestPageData( $widgetElements );
+			keepNative = ( page && page.keepNativeSelector()) || "";
+
+			$widgetElements = $widgetElements.not( keepNative );
+		}
+
+		$widgetElements[ this.widgetName ]();
 	}
 });
 

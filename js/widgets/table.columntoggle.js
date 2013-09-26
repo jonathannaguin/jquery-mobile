@@ -61,7 +61,7 @@ $.widget( "mobile.table", $.mobile.table, {
 		// so it can be called on refresh, too
 
 		// update column toggles on resize
-		this._on( this.window, {
+		this._on( $.mobile.window, {
 			throttledresize: "_setToggleState"
 		});
 	},
@@ -139,7 +139,7 @@ $.widget( "mobile.table", $.mobile.table, {
 			table = this.element,
 			opts = this.options,
 			ns = $.mobile.ns,
-			fragment = this.document[ 0 ].createDocumentFragment();
+			fragment = $.mobile.document[ 0 ].createDocumentFragment();
 
 		id = this._id() + "-popup";
 		menuButton = $( "<a role='button' href='#" + id + "' " +

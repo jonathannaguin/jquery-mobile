@@ -7,6 +7,13 @@
 
 define( [
 	"jquery",
+
+	// Deprecated as of 1.4.0 and will be removed in 1.5.0
+	// We only need this dependency so we get the $.widget shim from page, so we
+	// can use $.mobile.collapsible.initSelector, which is added by the shim.
+	// As of 1.5.0 we will assume that all children of the collapsibleset are to
+	// be turned into collapsibles.
+	"./page",
 	"../jquery.mobile.widget",
 	"./collapsible",
 	"./addFirstLastClasses" ], function( jQuery ) {
@@ -70,7 +77,7 @@ $.widget( "mobile.collapsibleset", $.extend( {
 	},
 
 	_setOptions: function( options ) {
-		var ret, hasCorners,
+		var ret,
 			elem = this.element,
 			themeClass = this._themeClassFromOption( "ui-group-theme-", options.theme );
 
@@ -80,16 +87,8 @@ $.widget( "mobile.collapsibleset", $.extend( {
 				.addClass( themeClass );
 		}
 
-		if ( options.inset !== undefined ) {
-			hasCorners = !!( options.inset && ( options.corners || this.options.corners ) );
-		}
-
 		if ( options.corners !== undefined ) {
-			hasCorners = !!( options.corners && ( options.inset || this.options.inset ) );
-		}
-
-		if ( hasCorners !== undefined ) {
-			elem.toggleClass( "ui-corner-all", hasCorners );
+			elem.toggleClass( "ui-corner-all", options.corners );
 		}
 
 		ret = this._super( options );
@@ -111,7 +110,7 @@ $.widget( "mobile.collapsibleset", $.extend( {
 	_refresh: function( create ) {
 		var collapsiblesInSet = this.element.children( childCollapsiblesSelector );
 
-		this.element.find( $.mobile.collapsible.initSelector ).not( ".ui-collapsible" ).collapsible();
+		$.mobile.collapsible.prototype.enhance( collapsiblesInSet.not( ".ui-collapsible" ) );
 
 		this._addFirstLastClasses( collapsiblesInSet, this._getVisibles( collapsiblesInSet, create ), create );
 	},

@@ -5,7 +5,7 @@ module.exports = function( grunt ) {
 		path = require( "path" ),
 		httpPort =  Math.floor( 9000 + Math.random()*1000 ),
 		name = "jquery.mobile",
-		dist = "dist" + path.sep,
+		dist = "dist",
 		copyrightYear = grunt.template.today( "UTC:yyyy" ),
 		banner = {
 			normal: [
@@ -23,105 +23,7 @@ module.exports = function( grunt ) {
 				"",
 				"" ].join( grunt.util.linefeed ),
 			minified: "/*! jQuery Mobile <%= version %> | <%if ( headShortHash ) {%>Git HEAD hash: <%= headShortHash %> <> <% } %>" + grunt.template.today( "UTC:yyyy-mm-dd" ) + "T" + grunt.template.today( "UTC:HH:MM:ss" ) + "Z | (c) 2010, " + copyrightYear + " jQuery Foundation, Inc. | jquery.org/license */\n"
-		},
-		dirs = {
-			dist: dist,
-			cdn: {
-				noversion: path.join( dist, "cdn-noversion" ),
-				git: path.join( dist, "git" )
-			},
-			tmp: path.join( dist, "tmp" )
-		},
-		files = {
-			css: {
-				structure: {
-					src: "css/structure/jquery.mobile.structure.css",
-					unminified: name + ".structure<%= versionSuffix %>.css"
-				},
-				theme: {
-					src: "css/themes/default/jquery.mobile.theme.css",
-					unminified: name + ".theme<%= versionSuffix %>.css",
-				},
-				bundle: {
-					src: "css/themes/default/jquery.mobile.css",
-					unminified: name + "<%= versionSuffix %>.css"
-				},
-				inlinesvg: {
-					src: "css/themes/default/jquery.mobile.inline-svg.css",
-					unminified: name + ".inline-svg<%= versionSuffix %>.css",
-				},
-				inlinepng: {
-					src: "css/themes/default/jquery.mobile.inline-png.css",
-					unminified: name + ".inline-png<%= versionSuffix %>.css",
-				},
-				externalpng: {
-					src: "css/themes/default/jquery.mobile.external-png.css",
-					unminified: name + ".external-png<%= versionSuffix %>.css",
-				}
-			},
-			getCSSFiles: function( destDir ) {
-				destDir = destDir || ".";
-				var list = [];
-				_.values( files.css ).forEach( function( value ) {
-					list.push({
-						src: value.src,
-						dest: path.join( destDir, value.unminified )
-					});
-				});
-				return list;
-			},
-			getMinifiedCSSFiles: function( destDir ) {
-				destDir = destDir || ".";
-				var list = [];
-				_.values( files.css ).forEach( function( value ) {
-					list.push({
-						src: path.join( destDir, value.unminified ),
-						dest: path.join( destDir, value.minified )
-					});
-				});
-				return list;
-			},
-			cdn: [
-				name + "<%= versionSuffix %>.js",
-				name + "<%= versionSuffix %>.min.js",
-				name + "<%= versionSuffix %>.min.map",
-
-				"<%= files.css.structure.unminified %>",
-				"<%= files.css.structure.minified %>",
-				"<%= files.css.bundle.unminified %>",
-				"<%= files.css.bundle.minified %>",
-				"<%= files.css.inlinesvg.unminified %>",
-				"<%= files.css.inlinesvg.minified %>",
-				"<%= files.css.inlinepng.unminified %>",
-				"<%= files.css.inlinepng.minified %>",
-				"<%= files.css.externalpng.unminified %>",
-				"<%= files.css.externalpng.minified %>",
-
-				"images/*.*",
-				"images/icons-png/**"
-			],
-
-			distZipContent: [
-				"<%= files.cdn %>",
-
-				"<%= files.css.theme.unminified %>",
-				"<%= files.css.theme.minified %>",
-
-				"images/icons-svg/**",
-				"demos/**"
-			],
-
-			zipFileName: name + "<%= versionSuffix %>.zip",
-
-			distZipOut: path.join( dist, name + "<%= versionSuffix %>.zip" ),
-
-			cdnNoversionZipOut: path.join( "<%= dirs.cdn.noversion %>","<%= files.zipFileName %>" )
 		};
-
-	// Add minified property to files.css.*
-	_.forEach( files.css, function( o ) {
-		o.minified = o.unminified.replace( /\.css$/, ".min.css" );
-	});
 
 	// Project configuration.
 	grunt.config.init({
@@ -135,9 +37,50 @@ module.exports = function( grunt ) {
 
 		headShortHash: "",
 
-		dirs: dirs,
+		dirs: {
+			cdn: path.join( dist, name + "-cdn" )
+		},
 
-		files: files,
+		files: {
+			css: {
+				structure: [
+					name + ".structure<%= versionSuffix %>.css",
+					name + ".structure<%= versionSuffix %>.min.css"
+				],
+				theme: [
+					name + ".theme<%= versionSuffix %>.css",
+					name + ".theme<%= versionSuffix %>.min.css"
+				],
+				bundle: [
+					name + "<%= versionSuffix %>.css",
+					name + "<%= versionSuffix %>.min.css"
+				]
+			},
+
+			cdn: [
+				name + "<%= versionSuffix %>.js",
+				name + "<%= versionSuffix %>.min.js",
+				name + "<%= versionSuffix %>.min.map",
+
+				"<%= files.css.structure %>",
+				"<%= files.css.bundle %>",
+
+				"images/*",
+				"images/icons-png/**"
+			],
+
+			distZipContent: [
+				"<%= files.cdn %>",
+
+				"<%= files.css.theme %>",
+
+				"images/icons-svg/**",
+				"demos/**"
+			],
+
+			cdnZipFile: "<%= dirs.cdn %>.zip"
+		},
+
 
 		jshint: {
 			js: {
@@ -268,17 +211,32 @@ module.exports = function( grunt ) {
 				cssImportIgnore: null
 			},
 			all: {
-				files: files.getCSSFiles( dist )
+				files: {
+					"dist/jquery.mobile.structure<%= versionSuffix %>.css": "css/structure/jquery.mobile.structure.css",
+					"dist/jquery.mobile.theme<%= versionSuffix %>.css": "css/themes/default/jquery.mobile.theme.css",
+					"dist/jquery.mobile<%= versionSuffix %>.css": "css/themes/default/jquery.mobile.css"
+				}
 			}
 		},
 
 		cssmin: {
 			options: {
-				banner: banner.minified,
-				keepSpecialComments: 0
+				banner: banner.minified
 			},
-			minify: {
-				files: files.getMinifiedCSSFiles( dist ),
+			structure: {
+				files: {
+					"dist/jquery.mobile.structure<%= versionSuffix %>.min.css": "dist/jquery.mobile.structure<%= versionSuffix %>.css"
+				}
+			},
+			theme: {
+				files: {
+					"dist/jquery.mobile.theme<%= versionSuffix %>.min.css": "dist/jquery.mobile.theme<%= versionSuffix %>.css"
+				}
+			},
+			bundle: {
+				files: {
+					"dist/jquery.mobile<%= versionSuffix %>.min.css": "dist/jquery.mobile<%= versionSuffix %>.css"
+				}
 			}
 		},
 
@@ -306,7 +264,7 @@ module.exports = function( grunt ) {
 				files: [
 					{
 						expand: true,
-						src: [ "demos/jqm-contents.php", "demos/jqm-panels.php" ],
+						src: [ "demos/global-nav.php", "demos/search.php" ],
 						dest: dist
 					}
 				]
@@ -328,7 +286,7 @@ module.exports = function( grunt ) {
 								// If we've already handled the nested includes use the version
 								// that was copied to the dist folder
 								// TODO use the config from copy:demos.nested.files
-								if( includePath.match(/jqm\-panels.php|jqm\-contents.php/) ) {
+								if( includePath.match(/search.php|global\-nav.php/) ) {
 									newSrcPath = "dist/" + newSrcPath;
 								}
 
@@ -344,7 +302,7 @@ module.exports = function( grunt ) {
 				files: [
 					{
 						expand: true,
-						src: [ "index.php", "demos/**/*.php", "demos/**/*.html", "!demos/navigation-php-redirect/**" ],
+						src: [ "index.php", "demos/**/*.php", "demos/**/*.html", "!demos/examples/redirect/**" ],
 						dest: dist,
 						ext: ".html"
 					}
@@ -368,8 +326,9 @@ module.exports = function( grunt ) {
 						expand: true,
 						cwd: dist,
 						src: [
+							"<%= files.css.bundle %>",
 							"images/**"
-						].concat( _.pluck( files.getMinifiedCSSFiles(), "dest" ) ),
+						],
 						dest: path.join( dist, "demos/css/themes/default/" )
 					},
 					{
@@ -394,50 +353,63 @@ module.exports = function( grunt ) {
 					}
 				]
 			},
-			noversion: {
-				options: {
-					processContent: function( content, srcPath ) {
-						if ( /\.min.js$|\.min.map$/.test( srcPath ) ) {
-							// We need to rewrite the map info
-							var re = new RegExp( grunt.template.process( "<%= versionSuffix %>" ), "g" );
-							content = content.replace( re, "" );
-						}
-						return content;
-					},
-				},
-				files: {
-					// WARNING: This will be modified by the config:copy:noversion task
-					cwd: dist,
-					src: "<%= files.cdn %>",
-					dest: "<%= dirs.tmp %>"
-				}
+			cdn: {
+				files: [
+					{
+						expand: true,
+						cwd: dist,
+						src: "<%= files.cdn %>",
+						dest: "<%= dirs.cdn %>"
+					}
+				]
 			},
 			git: {
-				options: {
-					processContent: function( content, srcPath ) {
-						if ( /\.min.js$|\.min.map$/.test( srcPath ) ) {
-							// We need to rewrite the map info
-							var re = new RegExp( grunt.template.process( name ), "g" );
-							content = content.replace( re, name + "-git" );
-						}
-						return content;
+				files: [
+					{
+						src: "dist/jquery.mobile.js",
+						dest: "dist/git/jquery.mobile-git.js"
 					},
-					processContentExclude: [ "**/*.zip", "**/*.gif", "**/*.png" ]
-				},
-				files: {
-					// WARNING: This will be modified by the config:copy:git task
-					cwd: dist,
-					src: "<%= files.cdn %>",
-					dest: "<%= dirs.cdn.git %>"
-				}
+					{
+						src: "dist/jquery.mobile.min.js",
+						dest: "dist/git/jquery.mobile-git.min.js"
+					},
+					{
+						src: "dist/jquery.mobile.css",
+						dest: "dist/git/jquery.mobile-git.css"
+					},
+					{
+						src: "dist/jquery.mobile.min.css",
+						dest: "dist/git/jquery.mobile-git.min.css"
+					},
+					{
+						src: "dist/jquery.mobile.structure.css",
+						dest: "dist/git/jquery.mobile.structure-git.css"
+					},
+					{
+						src: "dist/jquery.mobile.structure.min.css",
+						dest: "dist/git/jquery.mobile.structure-git.min.css"
+					},
+					{
+						src: "dist/jquery.mobile.zip",
+						dest: "dist/git/jquery.mobile-git.zip"
+					},
+					{
+						expand: true,
+						cwd: dist,
+						src: [
+							"images/**"
+						],
+						dest: "dist/git/"
+					}
+				]
 			}
 		},
 
 		"hash-manifest": {
-			noversion: {
+			cdn: {
 				options: {
 					algo: "md5",
-					cwd: "<%= dirs.tmp %>"
+					cwd: "<%= dirs.cdn %>"
 				},
 				src: [ "**/*" ],
 				dest: "MANIFEST"
@@ -447,7 +419,7 @@ module.exports = function( grunt ) {
 		compress: {
 			dist: {
 				options: {
-					archive: "<%= files.distZipOut %>"
+					archive: path.join( dist, name ) + "<%= versionSuffix %>.zip"
 				},
 				files: [
 					{
@@ -457,14 +429,14 @@ module.exports = function( grunt ) {
 					}
 				]
 			},
-			"cdn-noversion": {
+			cdn: {
 				options: {
-					archive: "<%= files.cdnNoversionZipOut %>"
+					archive: "<%= files.cdnZipFile %>"
 				},
 				files: [
 					{
 						expand: true,
-						cwd: "<%= dirs.tmp %>",
+						cwd: "<%= dirs.cdn %>",
 						src: [ "**/*" ]
 					}
 				]
@@ -618,8 +590,7 @@ module.exports = function( grunt ) {
 		clean: {
 			dist: [ dist ],
             git: [ path.join( dist, "git" ) ],
-			tmp: [ "<%= dirs.tmp %>" ],
-			"cdn-noversion": [ "<%= dirs.cdn.noversion %>" ]
+			cdn: [ "<%= dirs.cdn %>" ]
 		}
 	});
 
@@ -630,10 +601,10 @@ module.exports = function( grunt ) {
 	grunt.loadNpmTasks( "grunt-contrib-compress" );
 	grunt.loadNpmTasks( "grunt-contrib-concat" );
 	grunt.loadNpmTasks( "grunt-contrib-connect" );
-	grunt.loadNpmTasks( "grunt-contrib-cssmin" );
 	grunt.loadNpmTasks( "grunt-contrib-qunit" );
 	grunt.loadNpmTasks( "grunt-contrib-requirejs" );
 	grunt.loadNpmTasks( "grunt-contrib-uglify" );
+	grunt.loadNpmTasks( "grunt-css" );
 	grunt.loadNpmTasks( "grunt-git-authors" );
 	grunt.loadNpmTasks( "grunt-qunit-junit" );
 	grunt.loadNpmTasks( "grunt-hash-manifest" );
@@ -651,11 +622,11 @@ module.exports = function( grunt ) {
 
 	grunt.registerTask( "demos", [ "concat:demos", "copy:demos.nested-includes", "copy:demos.processed", "copy:demos.unprocessed" ] );
 
-	grunt.registerTask( "cdn", [ "release:init", "clean:tmp", "config:copy:noversion", "copy:noversion", "hash-manifest:noversion", "compress:cdn-noversion", "clean:tmp" ] );
+	grunt.registerTask( "cdn", [ "release:init", "clean:cdn", "copy:cdn", "hash-manifest:cdn", "compress:cdn", "clean:cdn" ] );
 
 	grunt.registerTask( "dist", [ "config:fetchHeadHash", "js:release", "css:release", "copy:images", "demos", "compress:dist"  ] );
 	grunt.registerTask( "dist:release", [ "release:init", "dist", "cdn" ] );
-	grunt.registerTask( "dist:git", [ "dist", "clean:git", "config:copy:git:-git", "copy:git" ] );
+	grunt.registerTask( "dist:git", [ "dist", "clean:git", "copy:git" ] );
 
 	grunt.registerTask( "test", [ "jshint", "config:fetchHeadHash", "js:release", "connect", "qunit:http" ] );
 	grunt.registerTask( "test:ci", [ "qunit_junit", "connect", "qunit:http" ] );

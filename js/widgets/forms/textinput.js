@@ -24,29 +24,25 @@ $.widget( "mobile.textinput", {
 
 	_create: function() {
 
-		var options = this.options,
+		var o = this.options,
 			isSearch = this.element.is( "[type='search'], :jqmData(type='search')" ),
 			isTextarea = this.element[ 0 ].tagName === "TEXTAREA",
-			isRange = this.element.is( "[data-" + ( $.mobile.ns || "" ) + "type='range']" ),
-			inputNeedsWrap = ( (this.element.is( "input" ) ||
-				this.element.is( "[data-" + ( $.mobile.ns || "" ) + "type='search']" ) ) &&
-					!isRange );
+			inputNeedsWrap = ((this.element.is( "input" ) || this.element.is( "[data-" + ( $.mobile.ns || "" ) + "type='search']" ) ) && !this.element.is( "[data-" + ( $.mobile.ns || "" ) + "type='range']" ));
 			
 		$.extend( this, {
-			classes: this._classesFromOptions(),
+			themeclass: "ui-body-" + ( ( o.theme === null ) ? "inherit" : o.theme ),
 			isSearch: isSearch,
 			isTextarea: isTextarea,
-			isRange: isRange,
 			inputNeedsWrap: inputNeedsWrap
 		});
 
 		this._autoCorrect();
 
 		if ( this.element[ 0 ].disabled ) {
-			options.disabled = true;
+			this.options.disabled = true;
 		}
 
-		if ( !options.enhanced ) {
+		if ( !o.enhanced ) {
 			this._enhance();
 		}
 
@@ -64,55 +60,37 @@ $.widget( "mobile.textinput", {
 	},
 
 	_enhance: function() {
-		var elementClasses = [];
 
 		if ( this.isTextarea ) {
-			elementClasses.push( "ui-input-text" );
+			this.element.addClass( "ui-input-text" );
 		}
 
-		if ( this.isTextarea || this.isRange ) {
-			elementClasses.push( "ui-shadow-inset" );
+		if ( this.element.is( "textarea, [data-" + ( $.mobile.ns || "" ) + "type='range']" ) ) {
+			this.element.addClass( "ui-shadow-inset" );
+			this._setOptions( this.options );
 		}
 
 		//"search" and "text" input widgets
 		if ( this.inputNeedsWrap ) {
 			this.element.wrap( this._wrap() );
-		} else {
-			elementClasses = elementClasses.concat( this.classes );
 		}
 
-		this.element.addClass( elementClasses.join( " " ) );
 	},
 
 	widget: function() {
 		return ( this.inputNeedsWrap ) ? this.element.parent() : this.element;
 	},
 
-	_classesFromOptions: function() {
-		var options = this.options,
-			classes = [];
-
-		classes.push( "ui-body-" + ( ( options.theme === null ) ? "inherit" : options.theme ) );
-		if ( options.corners ) {
-			classes.push( "ui-corner-all" );
-		}
-		if ( options.mini ) {
-			classes.push( "ui-mini" );
-		}
-		if ( options.disabled ) {
-			classes.push( "ui-state-disabled" );
-		}
-		if ( options.wrapperClass ) {
-			classes.push( options.wrapperClass );
-		}
-
-		return classes;
-	},
-
 	_wrap: function() {
+		var opts = this.options;
+
 		return $( "<div class='" +
 			( this.isSearch ? "ui-input-search " : "ui-input-text " ) +
-			this.classes.join( " " ) + " " +
+			"ui-body-" + ( ( opts.theme === null ) ? "inherit" : opts.theme ) + " " +
+			( opts.corners ? "ui-corner-all " : "" ) +
+			( opts.mini ? "ui-mini " : "" ) +
+			( opts.disabled ? "ui-state-disabled " : "" ) +
+			( opts.wrapperClass !== "" ? opts.wrapperClass + " " : "" ) +
 			"ui-shadow-inset'></div>" );
 	},
 
@@ -123,11 +101,8 @@ $.widget( "mobile.textinput", {
 		//      that we test for the presence of the feature by looking for
 		//      the autocorrect property on the input element. We currently
 		//      have no test for iOS 5 or newer so we're temporarily using
-		//      the touchOverflow support flag for jQM 1.0. Yes, I feel dirty.
-		//      - jblas
-		if ( typeof this.element[0].autocorrect !== "undefined" &&
-			!$.support.touchOverflow ) {
-
+		//      the touchOverflow support flag for jQM 1.0. Yes, I feel dirty. - jblas
+		if ( typeof this.element[0].autocorrect !== "undefined" && !$.support.touchOverflow ) {
 			// Set the attribute instead of the property just in case there
 			// is code that attempts to make modifications via HTML.
 			this.element[0].setAttribute( "autocorrect", "off" );
@@ -136,39 +111,43 @@ $.widget( "mobile.textinput", {
 	},
 
 	_handleBlur: function() {
-		this.widget().removeClass( $.mobile.focusClass );
+		this.element.removeClass( $.mobile.focusClass );
 		if ( this.options.preventFocusZoom ) {
 			$.mobile.zoom.enable( true );
 		}
 	},
 
 	_handleFocus: function() {
-		// In many situations, iOS will zoom into the input upon tap, this
-		// prevents that from happening
+		// In many situations, iOS will zoom into the input upon tap, this prevents that from happening
 		if ( this.options.preventFocusZoom ) {
 			$.mobile.zoom.disable( true );
 		}
-		this.widget().addClass( $.mobile.focusClass );
+		this.element.addClass( $.mobile.focusClass );
 	},
 
 	_setOptions: function ( options ) {
-		var outer = this.widget();
+		var themeclass,
+			outer = this.widget();
 
 		this._super( options );
 
-		if ( !( options.disabled === undefined &&
-			options.mini === undefined &&
-			options.corners === undefined &&
-			options.theme === undefined &&
-			options.wrapperClass === undefined ) ) {
+		if ( options.theme !== undefined ) {
+			themeclass = "ui-body-" + ( ( options.theme === null ) ? "inherit" : options.theme );
+			outer.removeClass( this.themeclass ).addClass( themeclass );
+			this.themeclass = themeclass;
+		}
 
-			outer.removeClass( this.classes.join( " " ) );
-			this.classes = this._classesFromOptions();
-			outer.addClass( this.classes.join( " " ) );
+		if ( options.corners !== undefined ) {
+			outer.toggleClass( "ui-corner-all", options.corners );
+		}
+
+		if ( options.mini !== undefined ) {
+			outer.toggleClass( "ui-mini", options.mini );
 		}
 
 		if ( options.disabled !== undefined ) {
 			this.element.prop( "disabled", !!options.disabled );
+			outer.toggleClass( "ui-disabled", !!options.disabled );
 		}
 	},
 
@@ -179,7 +158,7 @@ $.widget( "mobile.textinput", {
 		if ( this.inputNeedsWrap ) {
 			this.element.unwrap();
 		}
-		this.element.removeClass( "ui-input-text " + this.classes.join( " " ) );
+		this.element.removeClass( "ui-input-text " + this.themeclass + " ui-corner-all ui-mini ui-disabled" );
 	}
 });
 

@@ -3,7 +3,7 @@
 //>>label: “nojs” Classes
 //>>group: Utilities
 
-define( [ "jquery", "jquery.mobile.ns" ], function( jQuery ) {
+define( [ "jquery" ], function( jQuery ) {
 //>>excludeEnd("jqmBuildExclude");
 (function( $, undefined ) {
 

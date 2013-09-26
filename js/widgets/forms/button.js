@@ -58,20 +58,16 @@ $.widget( "mobile.button", {
 	},
 
 	_button: function() {
-		var options = this.options;
-
 		return $("<div class='ui-btn ui-input-btn" +
-			( options.wrapperClass ? " " + options.wrapperClass : "" ) +
-			( options.theme ? " ui-btn-" + options.theme : "" ) +
-			( options.corners ? " ui-corner-all" : "" ) +
-			( options.shadow ? " ui-shadow" : "" ) +
-			( options.inline ? " ui-btn-inline" : "" ) +
-			( options.mini ? " ui-mini" : "" ) +
-			( options.disabled ? " ui-state-disabled" : "" ) +
-			( ( options.iconpos && options.icon ) ?
-				" ui-btn-icon-" + options.iconpos :
-				( options.icon ? " ui-btn-icon-left" : "" ) ) +
-			( options.icon ? " ui-icon-" + options.icon : "" ) +
+			( this.options.wrapperClass ? " " + this.options.wrapperClass : "" ) +
+			( this.options.theme ? " ui-btn-" + this.options.theme : "" ) +
+			( this.options.corners ? " ui-corner-all" : "" ) +
+			( this.options.shadow ? " ui-shadow" : "" ) +
+			( this.options.inline ? " ui-btn-inline" : "" ) +
+			( this.options.mini ? " ui-mini" : "" ) +
+			( this.options.disabled ? " ui-disabled" : "" ) +
+			( ( this.options.iconpos && this.options.icon ) ? " ui-btn-icon-" + this.options.iconpos : ( this.options.icon ? " ui-btn-icon-left" : "" ) ) +
+			( this.options.icon ? " ui-icon-" + this.options.icon : "" ) +
 			"' >" + this.element.val() + "</div>");
 	},
 
@@ -85,42 +81,30 @@ $.widget( "mobile.button", {
 	},
 
 	_setOptions: function( options ) {
-		var outer = this.widget();
-
 		if ( options.theme !== undefined ) {
-			outer
-				.removeClass( this.options.theme )
-				.addClass( "ui-btn-" + options.theme );
+			this.widget().removeClass( this.options.theme ).addClass( "ui-btn-" + options.theme );
 		}
 		if ( options.corners !== undefined ) {
-			outer.toggleClass( "ui-corner-all", options.corners );
+			this.widget().toggleClass( "ui-corner-all", options.corners );
 		}
 		if ( options.shadow !== undefined ) {
-			outer.toggleClass( "ui-shadow", options.shadow );
+			this.widget().toggleClass( "ui-shadow", options.shadow );
 		}
 		if ( options.inline !== undefined ) {
-			outer.toggleClass( "ui-btn-inline", options.inline );
+			this.widget().toggleClass( "ui-btn-inline", options.inline );
 		}
 		if ( options.mini !== undefined ) {
-			outer.toggleClass( "ui-mini", options.mini );
+			this.widget().toggleClass( "ui-mini", options.mini );
 		}
 		if ( options.iconpos !== undefined ) {
-			outer.removeClass( "ui-btn-icon-" + options.iconpos );
+			this.widget().removeClass( "ui-btn-icon-" + options.iconpos );
 		}
 		if ( options.icon !== undefined ) {
 			if ( !this.options.iconpos && !options.iconpos ) {
-				outer.toggleClass( "ui-btn-icon-left", options.icon );
+				this.widget.toggleClass( "ui-btn-icon-left", options.icon );
 			}
-			outer
-				.removeClass( "ui-icon-" + this.options.icon )
-				.toggleClass( "ui-icon-" + options.icon, options.icon );
+			this.widget().removeClass( "ui-icon-" + this.options.icon ).toggleClass( "ui-icon-" + options.icon, options.icon );
 		}
-		if( options.disabled !== undefined ) {
-			this.element.prop( "disabled", options.disabled );
-			outer.toggleClass( "ui-state-disabled", options.disabled );
-		}
-
-		this._super( options );
 	},
 
 	refresh: function( create ) {

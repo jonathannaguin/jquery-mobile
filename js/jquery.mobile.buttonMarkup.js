@@ -8,8 +8,6 @@
 define( [ "jquery", "./jquery.mobile.core" ], function( jQuery ) {
 //>>excludeEnd("jqmBuildExclude");
 
-// buttonMarkup is deprecated as of 1.4.0 and will be removed in 1.5.0.
-
 (function( $, undefined ) {
 "use strict";
 
@@ -238,9 +236,7 @@ $.fn.buttonMarkup = function( options, overwriteClasses ) {
 
 			// ... and re-apply any unrecognized classes that were found
 			data.unknownClasses ).join( " " );
-		if ( el.tagName.toLowerCase() !== "button" ) {
-			el.setAttribute( "role", "button" );
-		}
+		el.setAttribute( "role", "button" );
 	}
 
 	return this;

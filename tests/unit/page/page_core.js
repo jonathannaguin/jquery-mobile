@@ -3,9 +3,14 @@
  */
 (function($){
 	var libName = 'jquery.mobile.page',
-		themedefault = $.mobile.page.prototype.options.theme;
+		themedefault = $.mobile.page.prototype.options.theme,
+		keepNative = $.mobile.page.prototype.options.keepNative;
 
-	module(libName);
+	module(libName, {
+		setup: function() {
+			$.mobile.page.prototype.options.keepNative = keepNative;
+		}
+	});
 
 	var eventStack = [],
 		etargets = [],
@@ -69,6 +74,33 @@
 
 		ok( !$( "#c" ).hasClass( "ui-body-" + themedefault ) );
 		ok( !$( "#c" ).hasClass( "ui-page" ) );
+	});
+
+	test( "keepNativeSelector returns the default where keepNative is not different", function() {
+		var pageProto = $.mobile.page.prototype;
+		pageProto.options.keepNative = pageProto.options.keepNativeDefault;
+
+		deepEqual(pageProto.keepNativeSelector(), pageProto.options.keepNativeDefault);
+	});
+
+	test( "keepNativeSelector returns the default where keepNative is empty, undefined, whitespace", function() {
+		var pageProto = $.mobile.page.prototype;
+
+		pageProto.options.keepNative = "";
+		deepEqual(pageProto.keepNativeSelector(), pageProto.options.keepNativeDefault);
+
+		pageProto.options.keepNative = undefined;
+		deepEqual(pageProto.keepNativeSelector(), pageProto.options.keepNativeDefault);
+
+		pageProto.options.keepNative = "  ";
+		deepEqual(pageProto.keepNativeSelector(), pageProto.options.keepNativeDefault);
+	});
+
+	test( "keepNativeSelector returns a selector joined with the default", function() {
+		var pageProto = $.mobile.page.prototype;
+
+		pageProto.options.keepNative = "foo, bar";
+		deepEqual(pageProto.keepNativeSelector(), "foo, bar, " + pageProto.options.keepNativeDefault);
 	});
 
 	test( "links inside an ignored container do not enhance", function() {

@@ -87,7 +87,7 @@ $.widget( "mobile.page", $.mobile.page, {
 	},
 
 	_handlePageBeforeShow: function () {
-		if ( this.options.overlayTheme && this.options.dialog ) {
+		if ( this.options.overlayTheme ) {
 			this.removeContainerBackground();
 			this.setContainerBackground( this.options.overlayTheme );
 		} else {

@@ -39,27 +39,6 @@ define( [ "jquery", "./jquery.mobile.ns", "./jquery.ui.core" ], function( jQuery
 			}, 150 );
 		},
 
-		getClosestBaseUrl: function( ele )	{
-			// Find the closest page and extract out its url.
-			var url = $( ele ).closest( ".ui-page" ).jqmData( "url" ),
-				base = $.mobile.path.documentBase.hrefNoHash;
-
-			if ( !$.mobile.dynamicBaseEnabled || !url || !$.mobile.path.isPath( url ) ) {
-				url = base;
-			}
-
-			return $.mobile.path.makeUrlAbsolute( url, base );
-		},
-		removeActiveLinkClass: function( forceRemoval ) {
-			if ( !!$.mobile.activeClickedLink &&
-				( !$.mobile.activeClickedLink.closest( "." + $.mobile.activePageClass ).length ||
-					forceRemoval ) ) {
-
-				$.mobile.activeClickedLink.removeClass( $.mobile.activeBtnClass );
-			}
-			$.mobile.activeClickedLink = null;
-		},
-
 		// DEPRECATED in 1.4
 		// Find the closest parent with a theme class on it. Note that
 		// we are not using $.fn.closest() on purpose here because this
@@ -142,19 +121,6 @@ define( [ "jquery", "./jquery.mobile.ns", "./jquery.ui.core" ], function( jQuery
 			height = ( typeof height === "number" ) ? height : $.mobile.getScreenHeight();
 
 			page.css( "min-height", height - ( pageOuterHeight - pageHeight ) );
-		},
-
-		loading: function() {
-			// If this is the first call to this function, instantiate a loader widget
-			var loader = this.loading._widget || $( $.mobile.loader.prototype.defaultHtml ).loader(),
-
-				// Call the appropriate method on the loader
-				returnValue = loader.loader.apply( loader, arguments );
-
-			// Make sure the loader is retained for future calls to this function.
-			this.loading._widget = loader;
-
-			return returnValue;
 		}
 	});
 
@@ -213,8 +179,8 @@ define( [ "jquery", "./jquery.mobile.ns", "./jquery.ui.core" ], function( jQuery
 					// If any matching elements remain filter ones with keepNativeSelector
 					if ( widgetElements.length ) {
 
-						// $.mobile.page.prototype.keepNativeSelector is deprecated this is just for backcompat
-						// Switch to $.mobile.keepNative in 1.5 which is just a value not a function
+						// $.mobile.page.prototype.keepNativeSelector is deprecated this is just for backcompt
+						// Switch to $.mobile.keepNativeSelector in 1.5 which is just a value not a function
 						widgetElements = widgetElements.not( $.mobile.page.prototype.keepNativeSelector() );
 					}
 
