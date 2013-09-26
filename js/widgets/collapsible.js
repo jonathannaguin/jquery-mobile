@@ -7,6 +7,13 @@
 
 define( [
 	"jquery",
+
+	// Deprecated as of 1.4.0 and will be removed in 1.5.0
+	// We only need this dependency so we get the $.widget shim from page, so we
+	// can use $.mobile.collapsible.initSelector in collapsibleset. As of 1.5.0
+	// we will assume that all children of the collapsibleset are to be turned
+	// into collapsibles.
+	"./page",
 	"../jquery.mobile.core",
 	"../jquery.mobile.widget" ], function( jQuery ) {
 //>>excludeEnd("jqmBuildExclude");
@@ -167,9 +174,9 @@ $.widget( "mobile.collapsible", {
 	},
 
 	_setOptions: function( options ) {
-		var isCollapsed, newTheme, oldTheme,
+		var isCollapsed, newTheme, oldTheme, hasCorners,
 			elem = this.element,
-			currentOpts = this.options,
+			currentOpts = this._getOptions( this.options ),
 			ui = this._ui,
 			anchor = ui.anchor,
 			status = ui.status,
@@ -182,7 +189,7 @@ $.widget( "mobile.collapsible", {
 			this._handleExpandCollapse( options.collapsed );
 		}
 
-		isCollapsed = elem.hasClass( "ui-collapsible-colapsed" );
+		isCollapsed = elem.hasClass( "ui-collapsible-collapsed" );
 
 		// Only options referring to the current state need to be applied right away
 		// It is enough to store options covering the alternate in this.options.
@@ -204,7 +211,7 @@ $.widget( "mobile.collapsible", {
 			}
 			if ( opts.expandedIcon !== undefined ) {
 				if ( currentOpts.expandedIcon ) {
-					anchor.removeClass( "ui-icon-" + currentOpts.expandedWIcon );
+					anchor.removeClass( "ui-icon-" + currentOpts.expandedIcon );
 				}
 				if ( opts.expandedIcon ) {
 					anchor.addClass( "ui-icon-" + opts.expandedIcon );
@@ -229,21 +236,17 @@ $.widget( "mobile.collapsible", {
 			ui.content.removeClass( oldTheme ).addClass( newTheme );
 		}
 
-		// It is important to apply "inset" before corners, because the new value of
-		// "inset" can affect whether we display corners or not. Note that setting
-		// the "inset" option to false does not cause a change in the value of
-		// this.options.corners - it merely causes a change in the interpretation of
-		// the value of the "corners" option.
 		if ( opts.inset !== undefined ) {
 			elem.toggleClass( "ui-collapsible-inset", opts.inset );
-			currentOpts.inset = opts.inset;
-			if ( !opts.inset ) {
-				opts.corners = false;
-			}
+			hasCorners = !!( opts.inset && ( opts.corners || currentOpts.corners ) );
 		}
 
 		if ( opts.corners !== undefined ) {
-			elem.toggleClass( "ui-corner-all", currentOpts.inset && opts.corners );
+			hasCorners = !!( opts.corners && ( opts.inset || currentOpts.inset ) );
+		}
+
+		if ( hasCorners !== undefined ) {
+			elem.toggleClass( "ui-corner-all", hasCorners );
 		}
 
 		if ( opts.mini !== undefined ) {
