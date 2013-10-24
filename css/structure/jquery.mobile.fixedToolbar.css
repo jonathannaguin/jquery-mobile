@@ -21,7 +21,7 @@
 }
 .ui-header-fixed.ui-fixed-hidden .ui-btn-left,
 .ui-header-fixed.ui-fixed-hidden .ui-btn-right {
-	margin-top: 0;
+	margin-top: 1px;
 }
 .ui-footer-fixed {
 	bottom: 0;
